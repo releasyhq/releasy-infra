@@ -424,6 +424,14 @@ releasy_server_upstreams:
 | `keycloak_admin_user`     | yes      | -       | Admin username (vault) |
 | `keycloak_admin_password` | yes      | -       | Admin password (vault) |
 
+#### Service Account Role Grants
+
+| Variable                                | Required | Default                                | Description                                       |
+|-----------------------------------------|----------|----------------------------------------|---------------------------------------------------|
+| `keycloak_admin_realm`                  | no       | `master`                               | Admin realm for API access                         |
+| `keycloak_admin_base_url`               | no       | `http://127.0.0.1:{{ keycloak_http_port }}` | Admin API base URL on the host               |
+| `keycloak_service_account_client_roles` | no       | `[]`                                   | Service account role mappings for clients         |
+
 ### Tailscale Variables
 
 | Variable                   | Required | Default                    | Description                      |

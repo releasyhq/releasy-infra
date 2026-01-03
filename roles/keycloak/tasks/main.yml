@@ -191,3 +191,36 @@
   loop_control:
     index_var: instance_index
     loop_var: keycloak_instance
+
+- name: Request Keycloak admin access token
+  ansible.builtin.uri:
+    url: >-
+      {{ keycloak_admin_base_url }}/realms/{{ keycloak_admin_realm }}
+      /protocol/openid-connect/token
+    method: POST
+    body_format: form-urlencoded
+    body:
+      grant_type: password
+      client_id: admin-cli
+      username: "{{ keycloak_admin_user }}"
+      password: "{{ keycloak_admin_password }}"
+    status_code: 200
+  register: keycloak_admin_token
+  no_log: true
+  retries: 6
+  delay: 5
+  until: keycloak_admin_token.json.access_token is defined
+  when: keycloak_service_account_client_roles | length > 0
+
+- name: Set Keycloak admin access token
+  ansible.builtin.set_fact:
+    keycloak_admin_access_token: "{{ keycloak_admin_token.json.access_token }}"
+  no_log: true
+  when: keycloak_service_account_client_roles | length > 0
+
+- name: Ensure Keycloak service account roles
+  ansible.builtin.include_tasks: service_account_roles.yml
+  loop: "{{ keycloak_service_account_client_roles }}"
+  loop_control:
+    loop_var: keycloak_service_account_mapping
+  when: keycloak_service_account_client_roles | length > 0

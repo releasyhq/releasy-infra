@@ -34,3 +34,6 @@ keycloak_portal_redirect_uris:
   - "{{ keycloak_portal_root_url }}/*"
 keycloak_portal_web_origins:
   - "{{ keycloak_portal_root_url }}"
+keycloak_admin_realm: "master"
+keycloak_admin_base_url: "http://127.0.0.1:{{ keycloak_http_port }}"
+keycloak_service_account_client_roles: []
