@@ -1,10 +1,4 @@
 ---
-- name: Assert Keycloak admin events settings
-  ansible.builtin.assert:
-    that:
-      - keycloak_admin_events_expiration_seconds | int >= 0
-    quiet: true
-
 - name: Fetch Keycloak realm settings for admin events
   ansible.builtin.uri:
     url: "{{ keycloak_admin_base_url }}/admin/realms/{{ keycloak_realm_name }}"
@@ -25,7 +19,6 @@
       enabled: "{{ keycloak_admin_events_realm.json.enabled | default(true) }}"
       adminEventsEnabled: "{{ keycloak_admin_events_enabled | bool }}"
       adminEventsDetailsEnabled: "{{ keycloak_admin_events_details_enabled | bool }}"
-      adminEventsExpiration: "{{ keycloak_admin_events_expiration_seconds | int }}"
     keycloak_admin_events_payload_optional: >-
       {{
         {}
@@ -49,5 +42,3 @@
       != (keycloak_admin_events_enabled | bool)
     or (keycloak_admin_events_realm.json.adminEventsDetailsEnabled | default(false) | bool)
       != (keycloak_admin_events_details_enabled | bool)
-    or (keycloak_admin_events_realm.json.adminEventsExpiration | default(0) | int)
-      != (keycloak_admin_events_expiration_seconds | int)
