@@ -50,3 +50,6 @@ keycloak_smtp_from_display_name: ""
 keycloak_smtp_reply_to: ""
 keycloak_smtp_reply_to_display_name: ""
 keycloak_smtp_envelope_from: ""
+keycloak_admin_events_enabled: false
+keycloak_admin_events_details_enabled: false
+keycloak_admin_events_expiration_seconds: 604800
