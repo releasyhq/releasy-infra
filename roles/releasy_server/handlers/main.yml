@@ -5,7 +5,7 @@
 
 - name: Show UFW rules
   ansible.builtin.command: ufw status numbered
-  when: releasy_firewall_show_rules
+  when: releasy_server_firewall_show_rules
   changed_when: false
 
 - name: Apply netplan

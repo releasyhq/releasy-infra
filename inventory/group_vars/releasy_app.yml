@@ -36,7 +36,7 @@ releasy_artifact_bucket_object_lock_default_retention: {}
 releasy_download_token_ttl_seconds: 600
 releasy_log_level: "info"
 releasy_database_max_connections: 5
-releasy_database_url: >-
+releasy_server_database_url: >-
   {{ "postgres://" ~ (postgres_app_user | urlencode) ~ ":" ~
      (postgres_app_password | urlencode) ~ "@" ~
      (releasy_server_postgres_host | default(postgres_host, true)) ~ ":" ~
@@ -58,17 +58,17 @@ tailscale_enabled: true
 tailscale_hostname: "releasy"
 
 # Optional firewall defaults (app host). Keep disabled by default.
-releasy_firewall_enabled: false
-releasy_firewall_enable_ufw: false
-releasy_firewall_default_deny_incoming: false
-releasy_firewall_allow_ssh: true
-releasy_firewall_explicit_deny_ssh: true
-releasy_firewall_show_rules: true
-releasy_firewall_show_rules_dry_run: true
-releasy_firewall_ssh_sources:
+releasy_server_firewall_enabled: false
+releasy_server_firewall_enable_ufw: false
+releasy_server_firewall_default_deny_incoming: false
+releasy_server_firewall_allow_ssh: true
+releasy_server_firewall_explicit_deny_ssh: true
+releasy_server_firewall_show_rules: true
+releasy_server_firewall_show_rules_dry_run: true
+releasy_server_firewall_ssh_sources:
   - "100.64.0.0/10"
   - "fd7a:115c:a1e0::/48"
-releasy_firewall_allowed_sources: []
+releasy_server_firewall_allowed_sources: []
 
 # Optional extra IP assignment (app host)
 releasy_extra_ip: ""

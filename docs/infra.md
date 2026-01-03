@@ -182,7 +182,7 @@ an auth key, and configures hostname and optional ACL tags.
 | Variable                             | Required | Default | Description                           |
 |--------------------------------------|----------|---------|---------------------------------------|
 | `releasy_log_level`                  | no       | `info`  | Log level (debug, info, warn, error)  |
-| `releasy_database_url`               | yes      | derived | Full PostgreSQL connection URL        |
+| `releasy_server_database_url`               | yes      | derived | Full PostgreSQL connection URL        |
 | `releasy_database_max_connections`   | no       | `5`     | Database connection pool size         |
 | `releasy_admin_api_key`              | yes      | -       | Admin bootstrap API key (vault)       |
 | `releasy_api_key_pepper`             | no       | -       | Additional secret for API key hashing |
@@ -243,15 +243,15 @@ releasy_artifact_bucket_object_lock_default_retention:
 
 | Variable                                 | Required | Default         | Description                         |
 |------------------------------------------|----------|-----------------|-------------------------------------|
-| `releasy_firewall_enabled`               | no       | `false`         | Enable firewall rules               |
-| `releasy_firewall_enable_ufw`            | no       | `false`         | Enable UFW service                  |
-| `releasy_firewall_default_deny_incoming` | no       | `false`         | Default deny incoming               |
-| `releasy_firewall_allow_ssh`             | no       | `true`          | Allow SSH access                    |
-| `releasy_firewall_explicit_deny_ssh`     | no       | `true`          | Explicitly deny SSH after allows    |
-| `releasy_firewall_ssh_sources`           | no       | Tailscale CIDRs | Allowed SSH source CIDRs            |
-| `releasy_firewall_allowed_sources`       | no       | `[]`            | CIDRs allowed to reach server ports |
-| `releasy_firewall_show_rules`            | no       | `true`          | Show UFW rules after changes        |
-| `releasy_firewall_show_rules_dry_run`    | no       | `true`          | Show UFW status in pre-tasks        |
+| `releasy_server_firewall_enabled`               | no       | `false`         | Enable firewall rules               |
+| `releasy_server_firewall_enable_ufw`            | no       | `false`         | Enable UFW service                  |
+| `releasy_server_firewall_default_deny_incoming` | no       | `false`         | Default deny incoming               |
+| `releasy_server_firewall_allow_ssh`             | no       | `true`          | Allow SSH access                    |
+| `releasy_server_firewall_explicit_deny_ssh`     | no       | `true`          | Explicitly deny SSH after allows    |
+| `releasy_server_firewall_ssh_sources`           | no       | Tailscale CIDRs | Allowed SSH source CIDRs            |
+| `releasy_server_firewall_allowed_sources`       | no       | `[]`            | CIDRs allowed to reach server ports |
+| `releasy_server_firewall_show_rules`            | no       | `true`          | Show UFW rules after changes        |
+| `releasy_server_firewall_show_rules_dry_run`    | no       | `true`          | Show UFW status in pre-tasks        |
 
 ### PostgreSQL Variables (`group_vars/releasy_db.yml`)
 

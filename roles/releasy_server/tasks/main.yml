@@ -2,7 +2,7 @@
 - name: Assert required variables
   ansible.builtin.assert:
     that:
-      - releasy_database_url is defined
+      - releasy_server_database_url is defined
       - releasy_admin_api_key is defined
       - releasy_server_image is defined
       - releasy_server_instances is defined
@@ -165,7 +165,7 @@
     name: ufw
     state: present
     update_cache: true
-  when: releasy_firewall_enabled
+  when: releasy_server_firewall_enabled
 
 - name: Ensure Docker is enabled and running
   ansible.builtin.systemd:
@@ -307,10 +307,8 @@
   register: releasy_server_unit
   notify: Reload systemd
 
-- name: Reload systemd when server unit changes
-  ansible.builtin.systemd:
-    daemon_reload: true
-  when: releasy_server_unit.changed
+- name: Flush handlers after systemd unit update
+  ansible.builtin.meta: flush_handlers
 
 - name: Stop legacy releasy-server service if present
   ansible.builtin.systemd:
@@ -347,7 +345,7 @@
 - name: Default deny incoming (optional)
   ansible.builtin.command: ufw default deny incoming
   register: releasy_server_ufw_default_deny
-  when: releasy_firewall_enabled and releasy_firewall_default_deny_incoming
+  when: releasy_server_firewall_enabled and releasy_server_firewall_default_deny_incoming
   changed_when: "'changed' in (releasy_server_ufw_default_deny.stdout | lower)"
   notify: Show UFW rules
 
@@ -356,7 +354,7 @@
   register: releasy_server_ufw_delete_openssh
   changed_when: "'Skipping' not in releasy_server_ufw_delete_openssh.stdout"
   failed_when: false
-  when: releasy_firewall_enabled and releasy_firewall_allow_ssh
+  when: releasy_server_firewall_enabled and releasy_server_firewall_allow_ssh
   notify: Show UFW rules
 
 - name: Remove legacy SSH deny rules
@@ -367,40 +365,40 @@
   loop:
     - "22/tcp"
     - "ssh"
-  when: releasy_firewall_enabled and releasy_firewall_allow_ssh
+  when: releasy_server_firewall_enabled and releasy_server_firewall_allow_ssh
   notify: Show UFW rules
 
 - name: Allow SSH from specific sources
   ansible.builtin.command: "ufw allow from {{ item }} to any port 22 proto tcp"
   register: releasy_server_ufw_allow_ssh_result
   changed_when: "'Skipping' not in releasy_server_ufw_allow_ssh_result.stdout"
-  loop: "{{ releasy_firewall_ssh_sources }}"
-  when: releasy_firewall_enabled
-    and releasy_firewall_allow_ssh
-    and (releasy_firewall_ssh_sources | length > 0)
+  loop: "{{ releasy_server_firewall_ssh_sources }}"
+  when: releasy_server_firewall_enabled
+    and releasy_server_firewall_allow_ssh
+    and (releasy_server_firewall_ssh_sources | length > 0)
   notify: Show UFW rules
 
 - name: Allow SSH (fallback)
   ansible.builtin.command: ufw allow OpenSSH
   register: releasy_server_ufw_allow_openssh
-  when: releasy_firewall_enabled
-    and releasy_firewall_allow_ssh
-    and (releasy_firewall_ssh_sources | length == 0)
+  when: releasy_server_firewall_enabled
+    and releasy_server_firewall_allow_ssh
+    and (releasy_server_firewall_ssh_sources | length == 0)
   changed_when: "'Skipping' not in releasy_server_ufw_allow_openssh.stdout"
   notify: Show UFW rules
 
 - name: Explicitly deny SSH from other sources
   ansible.builtin.command: ufw deny 22/tcp
   register: releasy_server_ufw_deny_ssh
-  when: releasy_firewall_enabled
-    and releasy_firewall_allow_ssh
-    and releasy_firewall_explicit_deny_ssh
+  when: releasy_server_firewall_enabled
+    and releasy_server_firewall_allow_ssh
+    and releasy_server_firewall_explicit_deny_ssh
   changed_when: "'Skipping' not in releasy_server_ufw_deny_ssh.stdout"
   notify: Show UFW rules
 
 - name: Enable UFW if requested
   ansible.builtin.command: ufw --force enable
-  when: releasy_firewall_enabled and releasy_firewall_enable_ufw
+  when: releasy_server_firewall_enabled and releasy_server_firewall_enable_ufw
   changed_when: false
 
 - name: Allow proxy sources to reach server ports
@@ -408,11 +406,11 @@
   register: releasy_server_ufw_allow_result
   changed_when: "'Skipping' not in releasy_server_ufw_allow_result.stdout"
   loop: >-
-    {{ releasy_firewall_allowed_sources
+    {{ releasy_server_firewall_allowed_sources
        | product(range(releasy_server_instance_port_base | default(releasy_port) | int,
                        (releasy_server_instance_port_base | default(releasy_port) | int)
                        + (releasy_server_instances | length)))
        | list }}
-  when: releasy_firewall_enabled
-    and (releasy_firewall_allowed_sources | length > 0)
+  when: releasy_server_firewall_enabled
+    and (releasy_server_firewall_allowed_sources | length > 0)
   notify: Show UFW rules

@@ -79,5 +79,5 @@ http:
         burst: {{ traefik_rate_limit_burst }}
     keycloak-rate-limit:
       rateLimit:
-        average: {{ keycloak_rate_limit_average }}
-        burst: {{ keycloak_rate_limit_burst }}
+        average: {{ traefik_keycloak_rate_limit_average }}
+        burst: {{ traefik_keycloak_rate_limit_burst }}

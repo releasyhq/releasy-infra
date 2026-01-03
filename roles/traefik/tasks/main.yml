@@ -122,8 +122,8 @@
   ansible.builtin.set_fact:
     traefik_rate_limit_average: "{{ traefik_rate_limit_average | default(1) }}"
     traefik_rate_limit_burst: "{{ traefik_rate_limit_burst | default(30) }}"
-    keycloak_rate_limit_average: "{{ keycloak_rate_limit_average | default(20) }}"
-    keycloak_rate_limit_burst: "{{ keycloak_rate_limit_burst | default(100) }}"
+    traefik_keycloak_rate_limit_average: "{{ traefik_keycloak_rate_limit_average | default(20) }}"
+    traefik_keycloak_rate_limit_burst: "{{ traefik_keycloak_rate_limit_burst | default(100) }}"
 
 - name: Use configured Releasy upstreams when provided
   ansible.builtin.set_fact:
