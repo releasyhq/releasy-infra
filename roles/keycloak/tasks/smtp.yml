@@ -1,0 +1,59 @@
+---
+- name: Assert Keycloak SMTP settings
+  ansible.builtin.assert:
+    that:
+      - keycloak_smtp_host | length > 0
+      - keycloak_smtp_from | length > 0
+      - keycloak_smtp_port | int > 0
+      - (not keycloak_smtp_auth_enabled | bool) or (keycloak_smtp_user | length > 0)
+      - (not keycloak_smtp_auth_enabled | bool) or (keycloak_smtp_password | length > 0)
+    quiet: true
+
+- name: Build Keycloak smtpServer config
+  ansible.builtin.set_fact:
+    keycloak_smtp_server: "{{ keycloak_smtp_server_base | combine(keycloak_smtp_server_optional) }}"
+  vars:
+    keycloak_smtp_server_base:
+      host: "{{ keycloak_smtp_host }}"
+      port: "{{ keycloak_smtp_port | string }}"
+      from: "{{ keycloak_smtp_from }}"
+      starttls: "{{ (keycloak_smtp_starttls | bool) | ternary('true', 'false') }}"
+      ssl: "{{ (keycloak_smtp_ssl | bool) | ternary('true', 'false') }}"
+      auth: "{{ (keycloak_smtp_auth_enabled | bool) | ternary('true', 'false') }}"
+    keycloak_smtp_server_optional: >-
+      {{
+        {}
+        | combine({'user': keycloak_smtp_user} if keycloak_smtp_auth_enabled | bool else {})
+        | combine({'password': keycloak_smtp_password} if keycloak_smtp_auth_enabled | bool else {})
+        | combine({'fromDisplayName': keycloak_smtp_from_display_name} if keycloak_smtp_from_display_name | length > 0 else {})
+        | combine({'replyTo': keycloak_smtp_reply_to} if keycloak_smtp_reply_to | length > 0 else {})
+        | combine({'replyToDisplayName': keycloak_smtp_reply_to_display_name} if keycloak_smtp_reply_to_display_name | length > 0 else {})
+        | combine({'envelopeFrom': keycloak_smtp_envelope_from} if keycloak_smtp_envelope_from | length > 0 else {})
+      }}
+  no_log: true
+
+- name: Fetch Keycloak realm settings
+  ansible.builtin.uri:
+    url: "{{ keycloak_admin_base_url }}/admin/realms/{{ keycloak_realm_name }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ keycloak_admin_access_token }}"
+    status_code: 200
+  register: keycloak_realm_settings
+  no_log: true
+
+- name: Update Keycloak SMTP settings
+  ansible.builtin.uri:
+    url: "{{ keycloak_admin_base_url }}/admin/realms/{{ keycloak_realm_name }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ keycloak_admin_access_token }}"
+    body_format: json
+    body:
+      id: "{{ keycloak_realm_settings.json.id | default(omit) }}"
+      realm: "{{ keycloak_realm_settings.json.realm | default(keycloak_realm_name) }}"
+      enabled: "{{ keycloak_realm_settings.json.enabled | default(true) }}"
+      smtpServer: "{{ keycloak_smtp_server }}"
+    status_code: 204
+  no_log: true
+  when: (keycloak_realm_settings.json.smtpServer | default({})) != keycloak_smtp_server
