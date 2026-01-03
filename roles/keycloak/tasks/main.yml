@@ -194,9 +194,7 @@
 
 - name: Request Keycloak admin access token
   ansible.builtin.uri:
-    url: >-
-      {{ keycloak_admin_base_url }}/realms/{{ keycloak_admin_realm }}
-      /protocol/openid-connect/token
+    url: "{{ keycloak_admin_base_url }}/realms/{{ keycloak_admin_realm }}/protocol/openid-connect/token"
     method: POST
     body_format: form-urlencoded
     body:
