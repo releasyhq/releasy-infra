@@ -19,3 +19,9 @@ certificatesResolvers:
 
 log:
   level: "{{ traefik_log_level }}"
+
+{% if traefik_access_log_enabled | default(false) %}
+accessLog:
+  filePath: "{{ traefik_access_log_path }}"
+  format: "{{ traefik_access_log_format }}"
+{% endif %}
