@@ -10,9 +10,6 @@ traefik_rate_limit_burst: 30
 keycloak_traefik_sticky: true
 keycloak_traefik_sticky_cookie_name: "KEYCLOAK_STICKY"
 
-releasy_public_host: "api.example.com"
-keycloak_public_host: ""
-
 releasy_app_primary_host: "{{ groups.get('releasy_app', []) | first | default('', true) }}"
 releasy_server_instance_port_base: >-
   {{ hostvars[releasy_app_primary_host].releasy_server_instance_port_base

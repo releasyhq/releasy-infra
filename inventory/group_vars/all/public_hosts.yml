@@ -1,0 +1,3 @@
+# Shared public hosts for the example inventory.
+releasy_public_host: "api.example.com"
+keycloak_public_host: ""
